@@ -1,0 +1,19 @@
+# .NET build output
+bin/
+obj/
+
+# Node
+node_modules/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.user
+
+# OS
+.DS_Store
