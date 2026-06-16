@@ -1,0 +1,73 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "fromEmail": "monaelizabet@gmail.com",
+        "toEmail": "={{ $json.body.studentEmail }}",
+        "subject": "Feedback på din inlämning",
+        "html": "={{ $json.body.feedback }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "84858e3c-df37-4285-9783-a29ad1a07058",
+      "name": "Send an Email",
+      "webhookId": "ec301a0f-8a23-4976-844b-988125352b93",
+      "credentials": {
+        "smtp": {
+          "id": "fmIL56l7YwBzu48d",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d179fa8a-acbd-43b0-9620-deebbef44941",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "14f2fb7f-2c53-42ac-8c93-a86558704374",
+      "name": "Webhook",
+      "webhookId": "d179fa8a-acbd-43b0-9620-deebbef44941"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2dfd4620-f00b-4e44-9ed0-69ea051d347b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8f71c462bf50dde4409e20c30d35c0cbc27380f7bc34a8907fccdaf893c0333e"
+  },
+  "id": "EeR9Kx6NLP3twdaY",
+  "tags": []
+}

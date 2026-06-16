@@ -175,4 +175,12 @@ button:disabled {
   border-radius: 4px;
   padding: 0.75rem;
 }
+
+.success {
+  margin-top: 1rem;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-radius: 4px;
+  padding: 0.75rem;
+}
 </style>

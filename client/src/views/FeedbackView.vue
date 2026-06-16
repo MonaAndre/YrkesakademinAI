@@ -24,6 +24,20 @@
     <div v-if="response" class="response">
       <h2>Svar:</h2>
       <div v-html="marked.parse(response)"></div>
+
+      <label for="studentEmail">Studentens mejl</label>
+      <input
+        id="studentEmail"
+        v-model="studentEmail"
+        type="email"
+        placeholder="student@exempel.se"
+      />
+      <button type="button" :disabled="sendLoading" @click="handleSendToStudent">
+        {{ sendLoading ? 'Skickar...' : 'Skicka till student' }}
+      </button>
+
+      <div v-if="sendSuccess" class="success">Mejl skickat!</div>
+      <div v-if="sendError" class="error">{{ sendError }}</div>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
   </div>
@@ -38,6 +52,11 @@ const kriterier = ref('')
 const response = ref('')
 const loading = ref(false)
 const error = ref('')
+
+const studentEmail = ref('')
+const sendLoading = ref(false)
+const sendSuccess = ref(false)
+const sendError = ref('')
 
 async function handleSubmit() {
   if (!inlamning.value.trim() || !kriterier.value.trim()) return
@@ -57,6 +76,26 @@ async function handleSubmit() {
     error.value = e.message
   } finally {
     loading.value = false
+  }
+}
+
+async function handleSendToStudent() {
+  if (!studentEmail.value.trim()) return
+  sendLoading.value = true
+  sendSuccess.value = false
+  sendError.value = ''
+  try {
+    const res = await fetch('http://localhost:5678/webhook/d179fa8a-acbd-43b0-9620-deebbef44941', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentEmail: studentEmail.value, feedback: marked.parse(response.value) }),
+    })
+    if (!res.ok) throw new Error('Något gick fel vid sändning av mejlet.')
+    sendSuccess.value = true
+  } catch (e) {
+    sendError.value = e.message
+  } finally {
+    sendLoading.value = false
   }
 }
 </script>
