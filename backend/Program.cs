@@ -1,41 +1,92 @@
+using Anthropic;
+using Anthropic.Models.Messages;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Skapa Anthropic-klient — läser ANTHROPIC_API_KEY automatiskt från miljövariabel
+AnthropicClient claude = new();
+
+// Modell som används för alla anrop
+const string Modell = "claude-haiku-4-5-20251001";
+
+// Hjälpfunktion: skicka ett meddelande till Claude och returnera svaret som sträng
+async Task<string> FragaClaude(string prompt)
 {
-    app.MapOpenApi();
+    var svar = await claude.Messages.Create(new MessageCreateParams
+    {
+        Model = Modell,
+        MaxTokens = 1024,
+        Messages = [new() { Role = Role.User, Content = prompt }]
+    });
+
+    return svar.Content.Select(b => b.Value).OfType<TextBlock>().FirstOrDefault()?.Text ?? "";
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+// POST /feedback
+// Tar emot en inlämning och kriterier, returnerar ett feedbackutkast
+app.MapPost("/feedback", async (FeedbackForfragan req) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var prompt = $"""
+        Du är en hjälpsam och konstruktiv lärare på en yrkesutbildning.
+        Ge detaljerad feedback på följande inlämning utifrån de angivna kriterierna.
 
-app.MapGet("/weatherforecast", () =>
+        Inlämning:
+        {req.Inlamning}
+
+        Kriterier:
+        {req.Kriterier}
+
+        Skriv ett genomtänkt och uppmuntrande feedbackutkast på svenska.
+        """;
+
+    var text = await FragaClaude(prompt);
+    return Results.Ok(new { reply = text });
+});
+
+// POST /kursmaterial
+// Tar emot ett ämne och en målgrupp, returnerar ett kursmaterialutkast
+app.MapPost("/kursmaterial", async (KursmaterialForfragan req) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var prompt = $"""
+        Du är en pedagogisk expert och kursutvecklare.
+        Skapa ett strukturerat kursmaterialutkast om följande ämne, anpassat för målgruppen.
+
+        Ämne:
+        {req.Amne}
+
+        Målgrupp:
+        {req.Malgrupp}
+
+        Inkludera: lärandemål, innehållsöversikt, förslag på aktiviteter och bedömningsmetoder.
+        Skriv på svenska.
+        """;
+
+    var text = await FragaClaude(prompt);
+    return Results.Ok(new { reply = text });
+});
+
+// POST /faq
+// Tar emot en fråga och returnerar ett tydligt svar
+app.MapPost("/faq", async (FaqForfragan req) =>
+{
+    var prompt = $"""
+        Du är en hjälpsam och pedagogisk assistent på en yrkesutbildning.
+        Svara på följande fråga på ett tydligt och lättförståeligt sätt.
+
+        Fråga:
+        {req.Fraga}
+
+        Skriv svaret på svenska.
+        """;
+
+    var text = await FragaClaude(prompt);
+    return Results.Ok(new { reply = text });
+});
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+// Datamodeller för inkommande JSON
+record FeedbackForfragan(string Inlamning, string Kriterier);
+record KursmaterialForfragan(string Amne, string Malgrupp);
+record FaqForfragan(string Fraga);
