@@ -14,7 +14,7 @@
     </form>
     <div v-if="response" class="response">
       <h2>Svar:</h2>
-      <p>{{ response }}</p>
+      <div v-html="marked.parse(response)"></div>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
   </div>
@@ -22,6 +22,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { marked } from 'marked'
 
 const input = ref('')
 const response = ref('')
@@ -37,7 +38,7 @@ async function handleSubmit() {
     const res = await fetch('/api/faq', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input.value }),
+      body: JSON.stringify({ fraga: input.value }),
     })
     if (!res.ok) throw new Error('Något gick fel med servern.')
     const data = await res.json()

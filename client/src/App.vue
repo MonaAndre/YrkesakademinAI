@@ -83,7 +83,15 @@ main {
   color: #555;
 }
 
-textarea {
+label {
+  display: block;
+  font-weight: 600;
+  color: #1a237e;
+  margin-bottom: 0.4rem;
+}
+
+textarea,
+input[type='text'] {
   width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
@@ -94,7 +102,8 @@ textarea {
   font-family: inherit;
 }
 
-textarea:focus {
+textarea:focus,
+input[type='text']:focus {
   outline: none;
   border-color: #1a237e;
 }
@@ -125,12 +134,38 @@ button:disabled {
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 1rem 1.25rem;
+  text-align: left;
+}
+
+.response h1,
+.response h2,
+.response h3 {
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
 }
 
 .response h2 {
-  margin-bottom: 0.5rem;
   font-size: 1rem;
   color: #1a237e;
+}
+
+.response h1,
+.response h3 {
+  margin-top: 0.75rem;
+  color: #1a237e;
+}
+
+.response p {
+  margin-bottom: 0.75rem;
+}
+
+.response ul,
+.response ol {
+  margin: 0 0 0.75rem 1.25rem;
+}
+
+.response li {
+  margin-bottom: 0.25rem;
 }
 
 .error {

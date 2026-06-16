@@ -2,10 +2,30 @@ using Anthropic;
 using Anthropic.Models.Messages;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// CORS-policy som tillåter anrop från Vue-frontend (Vite dev-server)
+const string FrontendPolicy = "FrontendPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendPolicy, policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-// Skapa Anthropic-klient — läser ANTHROPIC_API_KEY automatiskt från miljövariabel
-AnthropicClient claude = new();
+// Aktivera CORS-policyn för alla endpoints (feedback, kursmaterial, faq)
+app.UseCors(FrontendPolicy);
+
+// Läs API-nyckeln från konfigurationen (t.ex. dotnet user-secrets) istället för miljövariabel
+var apiKey = builder.Configuration["ANTHROPIC_API_KEY"]
+    ?? throw new InvalidOperationException("ANTHROPIC_API_KEY saknas i konfigurationen (user-secrets).");
+
+// Skapa Anthropic-klient med nyckeln skickad explicit
+AnthropicClient claude = new() { ApiKey = apiKey };
 
 // Modell som används för alla anrop
 const string Modell = "claude-haiku-4-5-20251001";
@@ -16,7 +36,7 @@ async Task<string> FragaClaude(string prompt)
     var svar = await claude.Messages.Create(new MessageCreateParams
     {
         Model = Modell,
-        MaxTokens = 1024,
+        MaxTokens = 1200,
         Messages = [new() { Role = Role.User, Content = prompt }]
     });
 
@@ -38,6 +58,7 @@ app.MapPost("/feedback", async (FeedbackForfragan req) =>
         {req.Kriterier}
 
         Skriv ett genomtänkt och uppmuntrande feedbackutkast på svenska.
+        Svaret MÅSTE vara max 500 ord totalt. Var konkret och sammanfattande, lista inte varje enskild detalj.
         """;
 
     var text = await FragaClaude(prompt);
@@ -60,6 +81,7 @@ app.MapPost("/kursmaterial", async (KursmaterialForfragan req) =>
 
         Inkludera: lärandemål, innehållsöversikt, förslag på aktiviteter och bedömningsmetoder.
         Skriv på svenska.
+        Svaret MÅSTE vara max 500 ord totalt. Var konkret och sammanfattande, lista inte varje enskild detalj.
         """;
 
     var text = await FragaClaude(prompt);
@@ -78,6 +100,7 @@ app.MapPost("/faq", async (FaqForfragan req) =>
         {req.Fraga}
 
         Skriv svaret på svenska.
+        Svaret MÅSTE vara max 500 ord totalt. Var konkret och sammanfattande, lista inte varje enskild detalj.
         """;
 
     var text = await FragaClaude(prompt);
