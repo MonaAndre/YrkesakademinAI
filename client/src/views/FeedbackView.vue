@@ -25,19 +25,29 @@
       <h2>Svar:</h2>
       <div v-html="marked.parse(response)"></div>
 
-      <label for="studentEmail">Studentens mejl</label>
-      <input
-        id="studentEmail"
-        v-model="studentEmail"
-        type="email"
-        placeholder="student@exempel.se"
-      />
-      <button type="button" :disabled="sendLoading" @click="handleSendToStudent">
-        {{ sendLoading ? 'Skickar...' : 'Skicka till student' }}
-      </button>
-
-      <div v-if="sendSuccess" class="success">Mejl skickat!</div>
-      <div v-if="sendError" class="error">{{ sendError }}</div>
+      <div class="send-panel">
+        <p class="send-panel-title">📨 Skicka feedback till student</p>
+        <div class="send-row">
+          <input
+            id="studentEmail"
+            v-model="studentEmail"
+            type="email"
+            placeholder="student@exempel.se"
+            class="email-input"
+          />
+          <button
+            type="button"
+            class="send-btn"
+            :disabled="sendLoading"
+            @click="handleSendToStudent"
+          >
+            <span v-if="sendLoading">Skickar…</span>
+            <span v-else>Skicka ✉️</span>
+          </button>
+        </div>
+        <div v-if="sendSuccess" class="success">✅ Mejl skickat!</div>
+        <div v-if="sendError" class="error">{{ sendError }}</div>
+      </div>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
   </div>
@@ -99,3 +109,61 @@ async function handleSendToStudent() {
   }
 }
 </script>
+
+<style scoped>
+.send-panel {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #f0f4ff;
+  border: 1px solid #c5cae9;
+  border-radius: 8px;
+}
+
+.send-panel-title {
+  font-weight: 600;
+  color: #1a237e;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.send-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.email-input {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  border: 1.5px solid #9fa8da;
+  border-radius: 6px;
+  font-family: inherit;
+  background: white;
+  margin-bottom: 0;
+  transition: border-color 0.2s;
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: #1a237e;
+}
+
+.send-btn {
+  white-space: nowrap;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.95rem;
+  background: #43a047;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: #388e3c;
+}
+
+.send-btn:disabled {
+  background: #a5d6a7;
+  cursor: not-allowed;
+}
+</style>

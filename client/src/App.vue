@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <header>
-      <h2>YrkesakademinAI</h2>
+      <div class="logo">
+        <span class="logo-icon">🎓</span>
+        <div class="logo-text">
+          <span class="logo-title">Yrkesakademin<span class="logo-ai">AI</span></span>
+        </div>
+      </div>
       <nav>
         <RouterLink to="/feedback">Feedback</RouterLink>
         <RouterLink to="/kursmaterial">Kursmaterial</RouterLink>
@@ -11,6 +16,11 @@
     <main>
       <RouterView />
     </main>
+    <footer>
+      <span>© 2026 YrkesakademinAI</span>
+      <span class="footer-divider">·</span>
+      <span>Drivs av Claude AI</span>
+    </footer>
   </div>
 </template>
 
@@ -34,17 +44,71 @@ body {
 }
 
 header {
-  background: #1a237e;
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
   color: white;
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-header h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.logo-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.logo-ai {
+  display: inline-block;
+  background: #ffd740;
+  color: #1a237e;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.05em 0.3em;
+  border-radius: 4px;
+  margin-left: 0.2em;
+  vertical-align: middle;
+  letter-spacing: 0.05em;
+}
+
+.logo-sub {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+footer {
+  background: #1a237e;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-divider {
+  opacity: 0.4;
 }
 
 nav {
