@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "fromEmail": "monaelizabet@gmail.com",
+        "fromEmail": "din-skola-mejl@yrkesakademin.se",
         "toEmail": "={{ $json.body.studentEmail }}",
         "subject": "Feedback på din inlämning",
         "html": "={{ $json.body.feedback }}",
